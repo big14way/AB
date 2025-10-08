@@ -1,0 +1,54 @@
+{
+  "name": "afribridge",
+  "version": "1.0.0",
+  "description": "WhatsApp-integrated stablecoin remittance dApp on Base blockchain",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "NODE_ENV=development node backend/server.js",
+    "test": "jest --config jest.config.js",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest tests/integration.test.js",
+    "test:bot": "jest tests/bot.test.js",
+    "test:e2e": "node tests/e2e-simulation.js",
+    "contracts:compile": "hardhat compile",
+    "contracts:test": "hardhat test",
+    "contracts:check-balance": "hardhat run scripts/check-balance.js --network sepolia",
+    "contracts:deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "ngrok": "ngrok http 3000",
+    "test:webhook": "curl -X POST http://localhost:3000/webhook/whatsapp -d 'From=whatsapp:+254712345678' -d 'Body=help'",
+    "test:cron": "node test-cron.js",
+    "test:all": "npm run contracts:test && npm test",
+    "deploy:vercel": "vercel --prod",
+    "deploy:preview": "vercel"
+  },
+  "keywords": [
+    "stablecoin",
+    "remittance",
+    "whatsapp",
+    "base",
+    "usdc"
+  ],
+  "dependencies": {
+    "@circle-fin/circle-sdk": "^1.3.0",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.9.0",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.5.1",
+    "node-cron": "^4.2.1",
+    "twilio": "^4.19.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.0.0",
+    "@types/jest": "^30.0.0",
+    "chai": "^4.3.10",
+    "ethers": "^6.9.0",
+    "hardhat": "^2.19.0",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
+  }
+}

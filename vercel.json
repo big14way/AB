@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "name": "afribridge-api",
+  "builds": [
+    {
+      "src": "backend/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "backend/server.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "regions": ["iad1"],
+  "functions": {
+    "backend/server.js": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  }
+}
