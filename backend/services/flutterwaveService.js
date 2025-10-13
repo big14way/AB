@@ -10,10 +10,23 @@ async function createPayment(amount, currency, phone, email, txRef) {
       throw new Error('FLUTTERWAVE_SECRET_KEY not configured');
     }
 
+    // Map currency to mobile money type
+    const mobileMoneyTypes = {
+      'KES': 'mobile_money_kenya',
+      'NGN': 'mobile_money_nigeria',
+      'GHS': 'mobile_money_ghana',
+      'UGX': 'mobile_money_uganda',
+      'RWF': 'mobile_money_rwanda'
+    };
+    
+    const chargeType = mobileMoneyTypes[currency] || 'mobile_money_kenya';
+
     const payload = {
       tx_ref: txRef,
       amount: amount,
       currency: currency,
+      email: email,
+      phone_number: phone,
       redirect_url: process.env.FLUTTERWAVE_REDIRECT_URL || 'https://afribridge.app/callback',
       payment_options: 'mobilemoneykenya,mobilemoneyghana,mobilemoneyrwanda,mobilemoneyuganda,mobilemoneyzambia',
       customer: {
@@ -32,11 +45,13 @@ async function createPayment(amount, currency, phone, email, txRef) {
       amount,
       currency,
       phone,
-      txRef
+      email,
+      txRef,
+      chargeType
     });
 
     const response = await axios.post(
-      `${FLUTTERWAVE_BASE_URL}/charges?type=mobile_money_kenya`,
+      `${FLUTTERWAVE_BASE_URL}/charges?type=${chargeType}`,
       payload,
       {
         headers: {
