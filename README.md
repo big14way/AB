@@ -47,6 +47,20 @@ AfriBridge enables users to send money from African mobile money services to USD
 - 100% contract coverage
 - Integration test suite
 
+## 🎯 For Judges & Reviewers
+
+**Want to test AfriBridge quickly?**
+
+- 📱 **Quick Start**: [QUICK_START_FOR_JUDGES.md](QUICK_START_FOR_JUDGES.md) - Test in 2 minutes
+- 📖 **Full Demo Guide**: [DEMO.md](DEMO.md) - Comprehensive testing instructions
+- 🎬 **Video Script**: [VIDEO_DEMO_SCRIPT.md](VIDEO_DEMO_SCRIPT.md) - For creating demo videos
+
+**Live Links:**
+- 🌐 Backend API: https://afribridge-8np4.onrender.com
+- 🔗 Smart Contract: [0xC3a201c2Dc904ae32a9a0adea3478EB252d5Cf88](https://sepolia.basescan.org/address/0xC3a201c2Dc904ae32a9a0adea3478EB252d5Cf88)
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
