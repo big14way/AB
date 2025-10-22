@@ -235,9 +235,14 @@ app.post('/webhook/flutterwave', express.json(), async (req, res) => {
     const secretHash = process.env.FLUTTERWAVE_SECRET_HASH;
     const signature = req.headers['verif-hash'];
 
-    if (!secretHash || signature !== secretHash) {
-      console.error('[Flutterwave Webhook] Invalid signature');
-      return res.status(401).json({ error: 'Unauthorized' });
+    // Skip signature validation in development mode
+    if (process.env.NODE_ENV !== 'development') {
+      if (!secretHash || signature !== secretHash) {
+        console.error('[Flutterwave Webhook] Invalid signature');
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+    } else {
+      console.log('[Flutterwave Webhook] Skipping signature validation in development mode');
     }
 
     const { event, data } = req.body;
@@ -325,6 +330,29 @@ app.get('/bridge/balance', async (req, res) => {
     const balance = await bridgeService.getContractBalance();
     res.json(balance);
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/admin/approve-usdc', express.json(), async (req, res) => {
+  try {
+    const { amount } = req.body;
+
+    if (!amount) {
+      return res.status(400).json({ error: 'Amount required' });
+    }
+
+    console.log('[Admin] Approving USDC:', amount);
+
+    const result = await bridgeService.approveUSDC(amount);
+
+    res.json({
+      success: true,
+      message: `Approved ${amount} USDC for Bridge contract`,
+      txHash: result.txHash
+    });
+  } catch (error) {
+    console.error('[Admin] Approval error:', error.message);
     res.status(500).json({ error: error.message });
   }
 });

@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: afribrigde
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: ETHEREUM_PRIVATE_KEY
+        sync: false
+      - key: BASE_SEPOLIA_RPC_URL
+        value: https://sepolia.base.org
+      - key: BRIDGE_CONTRACT_ADDRESS
+        value: 0xC3a201c2Dc904ae32a9a0adea3478EB252d5Cf88
+      - key: USDC_ADDRESS_SEPOLIA
+        value: 0x036CbD53842c5426634e7929541eC2318f3dCF7e
+      - key: FLUTTERWAVE_PUBLIC_KEY
+        sync: false
+      - key: FLUTTERWAVE_SECRET_KEY
+        sync: false
+      - key: FLUTTERWAVE_SECRET_HASH
+        sync: false
+      - key: FLUTTERWAVE_REDIRECT_URL
+        value: https://afribridge.app/callback
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_NUMBER
+        value: whatsapp:+14155238886
+      - key: CIRCLE_API_KEY
+        sync: false
+      - key: CIRCLE_WALLET_ID
+        sync: false
+      - key: ADMIN_API_KEY
+        sync: false
+      - key: DEFAULT_RECIPIENT_ADDRESS
+        value: 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0

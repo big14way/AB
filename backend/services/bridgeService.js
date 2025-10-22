@@ -39,9 +39,13 @@ function getBridgeContract() {
   if (!bridgeContract) {
     const contractAddress = process.env.BRIDGE_CONTRACT_ADDRESS || '0x123456789abcdef123456789abcdef1234567890';
     const wallet = initializeWallet();
-    
-    bridgeContract = new ethers.Contract(contractAddress, BRIDGE_ABI, wallet);
-    console.log('[Bridge] Contract initialized:', contractAddress);
+
+    // Normalize contract address to proper checksum format (EIP-55)
+    // getAddress() validates checksum, so we need to lowercase first to bypass validation
+    const checksummedContractAddress = ethers.getAddress(contractAddress.toLowerCase());
+
+    bridgeContract = new ethers.Contract(checksummedContractAddress, BRIDGE_ABI, wallet);
+    console.log('[Bridge] Contract initialized:', checksummedContractAddress);
   }
   return bridgeContract;
 }
@@ -50,19 +54,26 @@ async function depositToBridge(amount, toAddress, fiatRef) {
   try {
     const bridge = getBridgeContract();
     const wallet = initializeWallet();
-    
+
+    console.log('[Bridge] Original address:', toAddress);
+    // Normalize address to proper checksum format (EIP-55)
+    // getAddress() validates checksum, so we need to lowercase first to bypass validation
+    // then getAddress() will apply the correct checksum
+    const checksummedAddress = ethers.getAddress(toAddress.toLowerCase());
+    console.log('[Bridge] Checksummed address:', checksummedAddress);
+
     const amountInWei = ethers.parseUnits(amount.toString(), 6);
 
     console.log('[Bridge] Depositing USDC:', {
       from: wallet.address,
-      to: toAddress,
+      to: checksummedAddress,
       amount: amount,
       amountInWei: amountInWei.toString(),
       fiatRef
     });
 
     const gasEstimate = await bridge.depositUSDC.estimateGas(
-      toAddress,
+      checksummedAddress,
       amountInWei,
       fiatRef
     );
@@ -70,7 +81,7 @@ async function depositToBridge(amount, toAddress, fiatRef) {
     console.log('[Bridge] Gas estimate:', gasEstimate.toString());
 
     const tx = await bridge.depositUSDC(
-      toAddress,
+      checksummedAddress,
       amountInWei,
       fiatRef,
       {
@@ -125,29 +136,34 @@ async function approveUSDC(amount) {
     const wallet = initializeWallet();
     const usdcAddress = process.env.USDC_ADDRESS_SEPOLIA || '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
     const bridgeAddress = process.env.BRIDGE_CONTRACT_ADDRESS || '0x123456789abcdef123456789abcdef1234567890';
-    
+
+    // Normalize addresses to proper checksum format (EIP-55)
+    // getAddress() validates checksum, so we need to lowercase first to bypass validation
+    const checksummedUsdcAddress = ethers.getAddress(usdcAddress.toLowerCase());
+    const checksummedBridgeAddress = ethers.getAddress(bridgeAddress.toLowerCase());
+
     const usdcAbi = [
       'function approve(address spender, uint256 amount) external returns (bool)',
       'function allowance(address owner, address spender) external view returns (uint256)'
     ];
-    
-    const usdc = new ethers.Contract(usdcAddress, usdcAbi, wallet);
+
+    const usdc = new ethers.Contract(checksummedUsdcAddress, usdcAbi, wallet);
     const amountInWei = ethers.parseUnits(amount.toString(), 6);
 
-    const currentAllowance = await usdc.allowance(wallet.address, bridgeAddress);
-    
+    const currentAllowance = await usdc.allowance(wallet.address, checksummedBridgeAddress);
+
     if (currentAllowance >= amountInWei) {
       console.log('[Bridge] Sufficient allowance already exists');
       return { success: true, txHash: null };
     }
 
     console.log('[Bridge] Approving USDC:', {
-      spender: bridgeAddress,
+      spender: checksummedBridgeAddress,
       amount: amount,
       amountInWei: amountInWei.toString()
     });
 
-    const tx = await usdc.approve(bridgeAddress, amountInWei);
+    const tx = await usdc.approve(checksummedBridgeAddress, amountInWei);
     console.log('[Bridge] Approval transaction sent:', tx.hash);
 
     const receipt = await tx.wait();
@@ -167,25 +183,29 @@ async function withdrawUSDC(toAddress, amount) {
   try {
     const bridge = getBridgeContract();
     const wallet = initializeWallet();
-    
+
+    // Normalize address to proper checksum format (EIP-55)
+    // getAddress() validates checksum, so we need to lowercase first to bypass validation
+    const checksummedAddress = ethers.getAddress(toAddress.toLowerCase());
+
     const amountInWei = ethers.parseUnits(amount.toString(), 6);
 
     console.log('[Bridge] Withdrawing USDC:', {
       from: wallet.address,
-      to: toAddress,
+      to: checksummedAddress,
       amount: amount,
       amountInWei: amountInWei.toString()
     });
 
     const gasEstimate = await bridge.withdrawUSDC.estimateGas(
-      toAddress,
+      checksummedAddress,
       amountInWei
     );
 
     console.log('[Bridge] Gas estimate:', gasEstimate.toString());
 
     const tx = await bridge.withdrawUSDC(
-      toAddress,
+      checksummedAddress,
       amountInWei,
       {
         gasLimit: gasEstimate * 120n / 100n

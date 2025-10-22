@@ -13,13 +13,11 @@
     "next": "^14.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@coinbase/cdp-hooks": "^0.1.0",
-    "@coinbase/onchainkit": "^0.25.0",
     "wagmi": "^2.5.0",
     "viem": "^2.7.0",
+    "@wagmi/core": "^2.6.0",
+    "@wagmi/connectors": "^4.1.0",
     "@tanstack/react-query": "^5.17.0",
-    "@walletconnect/modal": "^2.6.2",
-    "ethers": "^6.9.0",
     "axios": "^1.6.0"
   },
   "devDependencies": {
