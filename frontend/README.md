@@ -105,36 +105,57 @@ frontend/
     └── (static assets)
 ```
 
-## Wagmi Configuration
+## WalletConnect Integration (Updated)
 
-The `config/wagmi.ts` file configures:
+**🆕 Now using Reown AppKit** for enhanced WalletConnect integration!
+
+The `config/appkit.ts` file configures the new Reown AppKit:
 
 ```typescript
-import { createConfig, http } from 'wagmi';
-import { baseSepolia } from 'viem/chains';
-import { walletConnect } from '@wagmi/connectors';
-import { coinbaseWallet } from 'wagmi/connectors';
+import { createAppKit } from '@reown/appkit/react';
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
+import { coinbaseWallet, walletConnect } from '@wagmi/connectors';
 
-export const config = createConfig({
-  chains: [baseSepolia],
+// Create Wagmi Adapter with connectors
+export const wagmiAdapter = new WagmiAdapter({
+  projectId: '1eebe528ca0ce94a99ceaa2e915058d7',
+  networks: [baseSepolia],
   connectors: [
-    // Coinbase Smart Wallet (email)
     coinbaseWallet({
       appName: 'AfriBridge',
       preference: 'smartWalletOnly',
     }),
-    
-    // WalletConnect (mobile wallets)
     walletConnect({
-      projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+      projectId: '1eebe528ca0ce94a99ceaa2e915058d7',
       showQrModal: true,
     }),
   ],
-  transports: {
-    [baseSepolia.id]: http('https://sepolia.base.org'),
+});
+
+// Create AppKit modal
+export const modal = createAppKit({
+  adapters: [wagmiAdapter],
+  projectId: '1eebe528ca0ce94a99ceaa2e915058d7',
+  networks: [baseSepolia],
+  features: {
+    email: true,
+    analytics: true,
   },
 });
 ```
+
+**Benefits of Reown AppKit:**
+- ✅ Professional modal UI out of the box
+- ✅ Support for 300+ mobile wallets
+- ✅ Enhanced email login experience
+- ✅ Built-in account management
+- ✅ Regular security updates from Reown team
+
+**Packages Used:**
+- `@reown/appkit@^1.8.11`
+- `@reown/appkit-adapter-wagmi@^1.8.11`
+
+See `WALLETCONNECT_INTEGRATION.md` for detailed documentation.
 
 ## Usage
 
